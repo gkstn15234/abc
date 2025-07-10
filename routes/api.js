@@ -341,14 +341,19 @@ router.post('/automation/run-live', async (req, res) => {
       session_id: sessionId
     });
     
-    // WebSocket을 통한 실시간 진행 상황 전송
+    // WebSocket을 통한 실시간 진행 상황 전송 (서버리스에서는 로그만)
     const emitProgress = (data) => {
-      if (global.io) {
-        global.io.emit('automation_progress', {
-          session_id: sessionId,
-          timestamp: new Date().toISOString(),
-          ...data
-        });
+      const logData = {
+        session_id: sessionId,
+        timestamp: new Date().toISOString(),
+        ...data
+      };
+      
+      console.log('🔄 Progress:', logData.message);
+      
+      // 로컬 개발 환경에서만 Socket.io 사용
+      if (global.io && process.env.NODE_ENV !== 'production') {
+        global.io.emit('automation_progress', logData);
       }
     };
     
