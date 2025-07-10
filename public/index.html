@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyperion-Press - AI 뉴스 자동화</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0; 
+            padding: 40px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { 
+            font-size: 3em; 
+            margin: 0 0 20px 0; 
+            text-align: center;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        .status {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .api-link {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .api-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Hyperion-Press</h1>
+        <p class="subtitle">AI-Powered News Automation Platform</p>
+        
+        <div class="status">
+            <h3>✅ 서버 상태: 정상 운영 중</h3>
+            <p>React 프론트엔드가 로드되지 않는 경우, 아래 API 엔드포인트로 직접 접근할 수 있습니다.</p>
+        </div>
+        
+        <h3>📡 API 엔드포인트:</h3>
+        <div style="text-align: center;">
+            <a href="/api/v1/stats" class="api-link">📊 시스템 통계</a>
+            <a href="/api/v1/articles" class="api-link">📰 기사 목록</a>
+            <a href="/api/v1/settings" class="api-link">⚙️ 설정</a>
+            <a href="/api/v1/automation/run" class="api-link">🤖 자동화 실행</a>
+        </div>
+        
+        <div class="status">
+            <h3>🚀 기능:</h3>
+            <ul>
+                <li>RSS 피드 자동 스캔</li>
+                <li>GPT-4o-mini AI 기사 생성</li>
+                <li>이미지 자동 검색 및 분석</li>
+                <li>Cloudflare CDN 자동 업로드</li>
+                <li>실시간 진행 상황 모니터링</li>
+            </ul>
+        </div>
+        
+        <p style="text-align: center; margin-top: 40px; opacity: 0.7;">
+            Powered by Vercel • Node.js • React • OpenAI GPT-4o-mini
+        </p>
+    </div>
+</body>
+</html> 

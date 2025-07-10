@@ -2,7 +2,7 @@
   "name": "hyperion-press",
   "version": "1.0.0",
   "description": "AI-powered news automation platform",
-  "main": "server.js",
+  "main": "api/index.js",
   "engines": {
     "node": ">=18.0.0"
   },
