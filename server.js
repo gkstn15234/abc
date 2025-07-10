@@ -55,22 +55,23 @@ app.get('/', (req, res) => {
 const apiRoutes = require('./routes/api');
 app.use('/api/v1', apiRoutes);
 
-// 프론트엔드 정적 파일 서빙 (빌드 후)
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'frontend/build')));
-  
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
-  });
-}
+// 프론트엔드 정적 파일 서빙
+app.use(express.static(path.join(__dirname, 'frontend/build')));
 
-// 404 핸들러
-app.use('*', (req, res) => {
-  res.status(404).json({
-    error: 'API 엔드포인트를 찾을 수 없습니다',
-    path: req.originalUrl
-  });
+// React 라우팅을 위한 catch-all 핸들러 (API 제외)
+app.get('*', (req, res) => {
+  // API 요청이 아닌 경우에만 index.html 반환
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
+  } else {
+    res.status(404).json({
+      error: 'API 엔드포인트를 찾을 수 없습니다',
+      path: req.originalUrl
+    });
+  }
 });
+
+
 
 // 에러 핸들러
 app.use((err, req, res, next) => {
