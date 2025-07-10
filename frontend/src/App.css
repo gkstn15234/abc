@@ -1,0 +1,31 @@
+.App {
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+/* 로딩 애니메이션 */
+.loading-spinner {
+  @apply animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600;
+}
+
+/* 상태 표시 점 */
+.status-dot {
+  @apply w-2 h-2 rounded-full;
+}
+
+.status-dot.online {
+  @apply bg-green-500 animate-pulse-slow;
+}
+
+.status-dot.offline {
+  @apply bg-red-500;
+}
+
+.status-dot.warning {
+  @apply bg-yellow-500 animate-pulse;
+}
+
+/* 버튼 스타일 */
+.btn-danger {
+  @apply bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+} 
