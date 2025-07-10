@@ -1,125 +1,169 @@
 const express = require('express');
-const cors = require('cors');
 const path = require('path');
 
 const app = express();
 
-// 미들웨어 설정
-app.use(cors());
+// 기본 미들웨어만
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// 프론트엔드 정적 파일 서빙 (안전하게)
-try {
-  const staticPath = path.join(__dirname, '../frontend/build');
-  app.use(express.static(staticPath));
-} catch (error) {
-  console.error('정적 파일 서빙 설정 실패:', error);
-  // 기본 HTML 제공
-  app.use(express.static(path.join(__dirname, '../public')));
-}
-
-// 기본 라우트
+// 기본 상태 확인
 app.get('/', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Hyperion-Press - AI 뉴스 자동화</title>
+        <style>
+            body { 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                margin: 0; 
+                padding: 40px; 
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                color: white;
+            }
+            .container { 
+                max-width: 800px; 
+                margin: 0 auto; 
+                background: rgba(255,255,255,0.1);
+                padding: 40px;
+                border-radius: 20px;
+                backdrop-filter: blur(10px);
+            }
+            h1 { 
+                font-size: 3em; 
+                margin: 0 0 20px 0; 
+                text-align: center;
+            }
+            .status {
+                background: rgba(255,255,255,0.2);
+                padding: 20px;
+                border-radius: 10px;
+                margin: 20px 0;
+            }
+            .api-link {
+                display: inline-block;
+                background: rgba(255,255,255,0.2);
+                padding: 15px 30px;
+                margin: 10px;
+                border-radius: 8px;
+                text-decoration: none;
+                color: white;
+                transition: all 0.3s ease;
+            }
+            .api-link:hover {
+                background: rgba(255,255,255,0.3);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🤖 Hyperion-Press</h1>
+            <p style="text-align: center; font-size: 1.2em;">AI-Powered News Automation Platform</p>
+            
+            <div class="status">
+                <h3>✅ 서버 상태: 정상 운영 중</h3>
+                <p>서버리스 함수가 성공적으로 실행되고 있습니다!</p>
+                <p><strong>타임스탬프:</strong> ${new Date().toLocaleString('ko-KR')}</p>
+            </div>
+            
+            <h3 style="text-align: center;">📡 API 테스트:</h3>
+            <div style="text-align: center;">
+                <a href="/api/v1/health" class="api-link">🏥 Health Check</a>
+                <a href="/api/v1/stats" class="api-link">📊 시스템 통계</a>
+                <a href="/api/v1/test" class="api-link">🧪 테스트</a>
+            </div>
+            
+            <div class="status">
+                <h3>🚀 Hyperion-Press 기능:</h3>
+                <ul>
+                    <li>✅ 서버리스 함수 정상 작동</li>
+                    <li>🔄 RSS 피드 자동 스캔 (준비 중)</li>
+                    <li>🤖 GPT-4o-mini AI 기사 생성 (준비 중)</li>
+                    <li>🖼️ 이미지 자동 검색 및 분석 (준비 중)</li>
+                    <li>☁️ Cloudflare CDN 자동 업로드 (준비 중)</li>
+                    <li>📊 실시간 진행 상황 모니터링 (준비 중)</li>
+                </ul>
+            </div>
+            
+            <p style="text-align: center; margin-top: 40px; opacity: 0.7;">
+                🌐 Powered by Vercel Serverless • Node.js • Express
+            </p>
+        </div>
+    </body>
+    </html>
+  `);
+});
+
+// 간단한 API 엔드포인트들
+app.get('/api/v1/health', (req, res) => {
   res.json({
-    message: '🤖 Hyperion-Press API Server',
-    version: '1.0.0',
-    status: 'running',
-    endpoints: {
-      articles: '/api/v1/articles',
-      automation: '/api/v1/automation',
-      settings: '/api/v1/settings',
-      stats: '/api/v1/stats'
+    success: true,
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    message: 'Hyperion-Press is running perfectly!'
+  });
+});
+
+app.get('/api/v1/stats', (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      status: 'running',
+      message: 'Hyperion-Press AI News Automation',
+      version: '1.0.0',
+      timestamp: new Date().toISOString(),
+      uptime: Math.floor(process.uptime()),
+      platform: process.platform,
+      node_version: process.version,
+      deployment: 'Vercel Serverless Functions'
     }
   });
 });
 
-// API 라우트 연결 (안전한 버전 사용)
-try {
-  // 먼저 간단한 API 라우트 로드
-  const simpleRoutes = require('./simple');
-  app.use('/api/v1', simpleRoutes);
-  
-  console.log('✅ 기본 API 라우트 로드 성공');
-  
-  // 복잡한 서비스들은 환경변수가 설정된 경우에만 로드
-  if (process.env.OPENAI_API_KEY) {
-    try {
-      const fullApiRoutes = require('../routes/api');
-      app.use('/api/v1/full', fullApiRoutes);
-      console.log('✅ 전체 API 라우트 로드 성공');
-    } catch (fullError) {
-      console.warn('⚠️ 전체 API 라우트 로드 실패, 기본 라우트만 사용:', fullError.message);
+app.get('/api/v1/test', (req, res) => {
+  res.json({
+    success: true,
+    message: '🎉 API 테스트 성공!',
+    data: {
+      server: 'Express.js',
+      environment: 'Vercel Serverless',
+      timestamp: new Date().toISOString(),
+      random_number: Math.floor(Math.random() * 1000),
+      status: 'All systems operational'
     }
-  } else {
-    console.log('🔧 환경변수 미설정으로 기본 라우트만 사용');
-  }
-  
-} catch (error) {
-  console.error('❌ API 라우트 로드 완전 실패:', error);
-  
-  // 최후의 수단: 인라인 API
-  app.get('/api/v1/stats', (req, res) => {
-    res.json({
-      success: true,
-      data: {
-        status: 'running',
-        message: 'Hyperion-Press API Server (Fallback Mode)',
-        timestamp: new Date().toISOString(),
-        note: 'Using fallback API endpoints'
-      }
-    });
   });
-  
-  app.get('/api/v1/health', (req, res) => {
-    res.json({ 
-      status: 'ok', 
-      mode: 'fallback',
-      timestamp: new Date().toISOString() 
-    });
-  });
-}
+});
 
-// React 라우팅을 위한 catch-all 핸들러 (API 제외)
-app.get('*', (req, res) => {
-  // API 요청이 아닌 경우에만 index.html 반환
-  if (!req.path.startsWith('/api')) {
-    try {
-      const indexPath = path.join(__dirname, '../frontend/build', 'index.html');
-      res.sendFile(indexPath);
-    } catch (error) {
-      // 프론트엔드 빌드 파일이 없으면 기본 HTML 제공
-      try {
-        const fallbackPath = path.join(__dirname, '../public', 'index.html');
-        res.sendFile(fallbackPath);
-      } catch (fallbackError) {
-        res.send(`
-          <html>
-            <head><title>Hyperion-Press</title></head>
-            <body>
-              <h1>🤖 Hyperion-Press</h1>
-              <p>AI-Powered News Automation Platform</p>
-              <p>서버가 실행 중입니다!</p>
-              <a href="/api/v1/stats">API 상태 확인</a>
-            </body>
-          </html>
-        `);
-      }
-    }
-  } else {
-    res.status(404).json({
-      error: 'API 엔드포인트를 찾을 수 없습니다',
-      path: req.originalUrl
-    });
-  }
+// favicon 처리
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end();
+});
+
+// 404 처리
+app.use('*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    error: 'Endpoint not found',
+    path: req.originalUrl,
+    available_endpoints: [
+      '/',
+      '/api/v1/health',
+      '/api/v1/stats', 
+      '/api/v1/test'
+    ]
+  });
 });
 
 // 에러 핸들러
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('Error:', err);
   res.status(500).json({
-    error: '서버 내부 오류가 발생했습니다',
-    message: process.env.NODE_ENV === 'development' ? err.message : undefined
+    success: false,
+    error: 'Internal server error',
+    message: err.message
   });
 });
 
