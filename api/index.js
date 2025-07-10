@@ -34,27 +34,49 @@ app.get('/', (req, res) => {
   });
 });
 
-// API 라우트 연결 (안전하게)
+// API 라우트 연결 (안전한 버전 사용)
 try {
-  const apiRoutes = require('../routes/api');
-  app.use('/api/v1', apiRoutes);
-} catch (error) {
-  console.error('API 라우트 로드 실패:', error);
+  // 먼저 간단한 API 라우트 로드
+  const simpleRoutes = require('./simple');
+  app.use('/api/v1', simpleRoutes);
   
-  // 기본 API 엔드포인트들만 제공
+  console.log('✅ 기본 API 라우트 로드 성공');
+  
+  // 복잡한 서비스들은 환경변수가 설정된 경우에만 로드
+  if (process.env.OPENAI_API_KEY) {
+    try {
+      const fullApiRoutes = require('../routes/api');
+      app.use('/api/v1/full', fullApiRoutes);
+      console.log('✅ 전체 API 라우트 로드 성공');
+    } catch (fullError) {
+      console.warn('⚠️ 전체 API 라우트 로드 실패, 기본 라우트만 사용:', fullError.message);
+    }
+  } else {
+    console.log('🔧 환경변수 미설정으로 기본 라우트만 사용');
+  }
+  
+} catch (error) {
+  console.error('❌ API 라우트 로드 완전 실패:', error);
+  
+  // 최후의 수단: 인라인 API
   app.get('/api/v1/stats', (req, res) => {
     res.json({
       success: true,
       data: {
         status: 'running',
-        message: 'Hyperion-Press API Server',
-        timestamp: new Date().toISOString()
+        message: 'Hyperion-Press API Server (Fallback Mode)',
+        timestamp: new Date().toISOString(),
+        note: 'Using fallback API endpoints'
       }
     });
   });
   
   app.get('/api/v1/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+    res.json({ 
+      status: 'ok', 
+      mode: 'fallback',
+      timestamp: new Date().toISOString() 
+    });
   });
 }
 
